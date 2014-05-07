@@ -57,7 +57,7 @@ public class WorkflowAction extends ActionSupport {
 		
 		workflowManager.delWorkflow(workflowId);
 		
-		return "pub_del_sucess";
+		return "pub_del_success";
 	}
 	
 	// 打开查看流程图片的界面
