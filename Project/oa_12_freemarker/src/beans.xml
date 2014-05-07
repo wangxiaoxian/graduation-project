@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<context:annotation-config ></context:annotation-config>
+	<context:component-scan base-package="com.bjsxt" />
+	
+	<!-- DI of action(begin) -->
+	<bean id="orgManager" class="com.bjsxt.oa.manager.impl.OrgManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="orgAction" class="com.bjsxt.oa.web.OrgAction" scope="prototype">
+		<property name="orgManager" ref="orgManager" />
+	</bean>
+	
+	<bean id="personManager" class="com.bjsxt.oa.manager.impl.PersonManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="personAction" class="com.bjsxt.oa.web.PersonAction" scope="prototype">
+		<property name="personManager" ref="personManager" />
+	</bean>
+	
+	<bean id="moduleManager" class="com.bjsxt.oa.manager.impl.ModuleManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="moduleAction" class="com.bjsxt.oa.web.ModuleAction" scope="prototype">
+		<property name="moduleManager" ref="moduleManager" />
+	</bean>
+	
+	<bean id="roleManager" class="com.bjsxt.oa.manager.impl.RoleManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="roleAction" class="com.bjsxt.oa.web.RoleAction" scope="prototype">
+		<property name="roleManager" ref="roleManager" />
+	</bean>
+	
+	<bean id="userManager" class="com.bjsxt.oa.manager.impl.UserManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- UserAction的列表是Person的数据，因此，这里直接引用前面的personManager -->
+	<bean id="userAction" class="com.bjsxt.oa.web.UserAction" scope="prototype">
+		<property name="personManager" ref="personManager" />
+		<property name="userManager" ref="userManager" />
+		<property name="roleManager" ref="roleManager"/>
+	</bean>
+	
+	<bean id="aclManager" class="com.bjsxt.oa.manager.impl.AclManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="aclAction" class="com.bjsxt.oa.web.AclAction" scope="prototype">
+		<property name="roleManager" ref="roleManager" />
+		<property name="moduleManager" ref="moduleManager" />
+		<property name="userManager" ref="userManager" />
+	</bean>
+	
+	<bean id="loginAction" class="com.bjsxt.oa.web.LoginAction" scope="prototype">
+		<property name="userManager" ref="userManager" />
+	</bean>
+	
+	<bean id="indexAction" class="com.bjsxt.oa.web.IndexAction" scope="prototype">
+		<property name="aclManager" ref="aclManager" />
+	</bean>
+	
+	<bean id="initSystemDatas" class="com.bjsxt.oa.manager.impl.InitSystemDatasImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="orgManager" ref="orgManager" />
+		<property name="userManager" ref="userManager" />
+	</bean>
+	
+	<bean id="securityFunctions" class="com.bjsxt.oa.web.utils.SecurityFunctions">
+		<property name="aclManager" ref="aclManager"></property>
+	</bean>
+	
+	<!-- jbpm -->
+	<bean id="jbpmConfiguration" class="org.springmodules.workflow.jbpm31.LocalJbpmConfigurationFactoryBean">
+		<property name="configuration" value="classpath:jbpm.cfg.xml"/>
+	</bean>
+	
+	<bean id="jbpmFacade" class="com.bjsxt.oa.manager.impl.JbpmFacadeImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="jbpmConfiguration" ref="jbpmConfiguration"></property>
+	</bean>	
+	
+	<bean id="workflowManager" class="com.bjsxt.oa.manager.impl.WorkflowManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="jbpmFacade" ref="jbpmFacade"></property>
+	</bean>
+	
+	<bean id="workflowAction" class="com.bjsxt.oa.web.WorkflowAction" scope="prototype">
+		<property name="workflowManager" ref="workflowManager" />
+	</bean>
+	
+	<bean id="documentManager" class="com.bjsxt.oa.manager.impl.DocumentManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="jbpmFacade" ref="jbpmFacade"></property>
+	</bean>
+	
+	<bean id="documentAction" class="com.bjsxt.oa.web.DocumentAction" scope="prototype">
+		<property name="workflowManager" ref="workflowManager" />
+		<property name="documentManager" ref="documentManager" />
+	</bean>
+	
+	<bean id="formManager" class="com.bjsxt.oa.manager.impl.FormManagerImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="flowFormAction" class="com.bjsxt.oa.web.FlowFormAction" scope="prototype">
+		<property name="workflowManager" ref="workflowManager" />
+		<property name="formManager" ref="formManager" />
+	</bean>
+	
+	<bean id="dynaFormFunction" class="com.bjsxt.oa.web.utils.DynaFormFunction">
+		<property name="formManager" ref="formManager"></property>
+	</bean>
+	<!-- DI of action(end) -->
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<value>classpath:jdbc.properties</value>
+		</property>
+	</bean>
+	<bean id="dataSource" destroy-method="close"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	<!-- 
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 
+		<property name="packagesToScan">
+			<list>
+				<value>com.bjsxt.registration.model</value>
+			</list>
+		</property>
+		 -->
+		<property name="mappingResources">
+  			<list>
+    			<value>com/bjsxt/oa/model/Organization.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/Person.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/User.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/Role.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/UsersRoles.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/ACL.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/Module.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/Workflow.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/Document.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/ApproveInfo.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/FieldInput.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/FieldType.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/FlowForm.hbm.xml</value>
+    			<value>com/bjsxt/oa/model/FormField.hbm.xml</value>
+    			
+    			<value>org/jbpm/graph/action/Script.hbm.xml</value>
+				<value>org/jbpm/identity/User.hbm.xml</value>
+				<value>org/jbpm/identity/Group.hbm.xml</value>
+				<value>org/jbpm/identity/Membership.hbm.xml</value>
+				<value>org/jbpm/db/hibernate.queries.hbm.xml</value>
+				<value>org/jbpm/graph/def/ProcessDefinition.hbm.xml</value>
+				<value>org/jbpm/graph/def/Node.hbm.xml</value>
+				<value>org/jbpm/graph/def/Transition.hbm.xml</value>
+				<value>org/jbpm/graph/def/Event.hbm.xml</value>
+				<value>org/jbpm/graph/def/Action.hbm.xml</value>
+				<value>org/jbpm/graph/def/SuperState.hbm.xml</value>
+				<value>org/jbpm/graph/def/ExceptionHandler.hbm.xml</value>
+				<value>org/jbpm/instantiation/Delegation.hbm.xml</value>
+				<value>org/jbpm/graph/node/StartState.hbm.xml</value>
+				<value>org/jbpm/graph/node/EndState.hbm.xml</value>
+				<value>org/jbpm/graph/node/ProcessState.hbm.xml</value>
+				<value>org/jbpm/graph/node/Decision.hbm.xml</value>
+				<value>org/jbpm/graph/node/Fork.hbm.xml</value>
+				<value>org/jbpm/graph/node/Join.hbm.xml</value>
+				<value>org/jbpm/graph/node/State.hbm.xml</value>
+				<value>org/jbpm/graph/node/TaskNode.hbm.xml</value>
+				<value>org/jbpm/context/def/ContextDefinition.hbm.xml</value>
+				<value>org/jbpm/context/def/VariableAccess.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/def/TaskMgmtDefinition.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/def/Swimlane.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/def/Task.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/def/TaskController.hbm.xml</value>
+				<value>org/jbpm/module/def/ModuleDefinition.hbm.xml</value>
+				<value>org/jbpm/bytes/ByteArray.hbm.xml</value>
+				<value>org/jbpm/file/def/FileDefinition.hbm.xml</value>
+				<value>org/jbpm/scheduler/def/CreateTimerAction.hbm.xml</value>
+				<value>org/jbpm/scheduler/def/CancelTimerAction.hbm.xml</value>
+				<value>org/jbpm/graph/exe/Comment.hbm.xml</value>
+				<value>org/jbpm/graph/exe/ProcessInstance.hbm.xml</value>
+				<value>org/jbpm/graph/exe/Token.hbm.xml</value>
+				<value>org/jbpm/graph/exe/RuntimeAction.hbm.xml</value>
+				<value>org/jbpm/module/exe/ModuleInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/ContextInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/TokenVariableMap.hbm.xml</value>
+				<value>org/jbpm/context/exe/VariableInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/ByteArrayInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/DateInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/DoubleInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/HibernateLongInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/HibernateStringInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/LongInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/NullInstance.hbm.xml</value>
+				<value>org/jbpm/context/exe/variableinstance/StringInstance.hbm.xml</value>
+				<value>org/jbpm/job/Job.hbm.xml</value>
+				<value>org/jbpm/job/Timer.hbm.xml</value>
+				<value>org/jbpm/job/ExecuteNodeJob.hbm.xml</value>
+				<value>org/jbpm/job/ExecuteActionJob.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/exe/TaskMgmtInstance.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/exe/TaskInstance.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/exe/PooledActor.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/exe/SwimlaneInstance.hbm.xml</value>
+				<value>org/jbpm/logging/log/ProcessLog.hbm.xml</value>
+				<value>org/jbpm/logging/log/MessageLog.hbm.xml</value>
+				<value>org/jbpm/logging/log/CompositeLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/ActionLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/NodeLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/ProcessInstanceCreateLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/ProcessInstanceEndLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/ProcessStateLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/SignalLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/TokenCreateLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/TokenEndLog.hbm.xml</value>
+				<value>org/jbpm/graph/log/TransitionLog.hbm.xml</value>
+				<value>org/jbpm/context/log/VariableLog.hbm.xml</value>
+				<value>org/jbpm/context/log/VariableCreateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/VariableDeleteLog.hbm.xml</value>
+				<value>org/jbpm/context/log/VariableUpdateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/variableinstance/ByteArrayUpdateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/variableinstance/DateUpdateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/variableinstance/DoubleUpdateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/variableinstance/HibernateLongUpdateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/variableinstance/HibernateStringUpdateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/variableinstance/LongUpdateLog.hbm.xml</value>
+				<value>org/jbpm/context/log/variableinstance/StringUpdateLog.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/log/TaskLog.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/log/TaskCreateLog.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/log/TaskAssignLog.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/log/TaskEndLog.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/log/SwimlaneLog.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/log/SwimlaneCreateLog.hbm.xml</value>
+				<value>org/jbpm/taskmgmt/log/SwimlaneAssignLog.hbm.xml</value>
+  			</list>
+  		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQL5Dialect
+				</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- 使用注解的方式配置事务,然后在class头或方法头加入@Transactional 
+	<tx:annotation-driven transaction-manager="txManager"/>
+	 -->
+	<aop:config>
+		<aop:pointcut id="bussinessService"
+			expression="execution(* com.bjsxt.oa.manager.*.*(..))" />
+		<aop:advisor pointcut-ref="bussinessService"
+			advice-ref="txAdvice" />
+	</aop:config>
+
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED"/>
+ 			<tx:method name="del*" propagation="REQUIRED"/>
+ 			<tx:method name="update*" propagation="REQUIRED"/>
+ 			<tx:method name="deloy*" propagation="REQUIRED"/>
+ 			<tx:method name="submit*" propagation="REQUIRED"/>
+ 			<tx:method name="*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+</beans>

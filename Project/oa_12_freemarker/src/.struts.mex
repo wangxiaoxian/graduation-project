@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Struts2Diagram version="2.0">
+  <package name="registration" location="171,165" size="280,210">
+    <action name="orgManager" location="0,0" size="0,0">
+      <result name="success">
+        <resourceEdge source="success" routing="0" target="registerSuccess.jsp" />
+      </result>
+      <result name="fail">
+        <resourceEdge source="fail" routing="0" target="registerFail.jsp" />
+      </result>
+      <result name="list">
+        <resourceEdge source="list" routing="0" target="userlist.jsp" />
+      </result>
+      <result name="load">
+        <resourceEdge source="load" routing="0" target="user.jsp" />
+      </result>
+    </action>
+  </package>
+  <webResource name="registerSuccess.jsp" path="/registerSuccess.jsp" location="241,430" size="150,55" />
+  <webResource name="registerFail.jsp" path="/registerFail.jsp" location="9,220" size="150,55" />
+  <webResource name="userlist.jsp" path="/userlist.jsp" location="261,10" size="150,55" />
+  <webResource name="user.jsp" path="/user.jsp" location="506,220" size="150,55" />
+</Struts2Diagram>
+

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class table="T_Workflow" name="com.bjsxt.oa.model.Workflow">
+    <id name="id">
+      <generator class="native"/>
+    </id>
+    <property name="name" unique="true"/>
+    <property name="processDef" length="99999999" type="binary"/>
+    <property name="processImage" length="99999999" type="binary"/>
+    <one-to-one name="flowForm" property-ref="workflow"/>
+  </class>
+</hibernate-mapping>

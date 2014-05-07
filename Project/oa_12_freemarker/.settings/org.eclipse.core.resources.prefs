@@ -1,0 +1,8 @@
+eclipse.preferences.version=1
+encoding//WebRoot/outlook.jsp=UTF-8
+encoding//WebRoot/script/public.js=UTF-8
+encoding//src/com/bjsxt/oa/manager/AclManager.java=GBK
+encoding//src/com/bjsxt/oa/manager/InitSystemDatas.java=GBK
+encoding//src/com/bjsxt/oa/manager/impl/JbpmFacadeImpl.java=GBK
+encoding//src/com/bjsxt/oa/manager/impl/PersonManagerImpl.java=UTF-8
+encoding//src/com/bjsxt/oa/model/ACL.java=GBK

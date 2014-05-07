@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.action.extension" value="action,do,html,htm" />
+	<constant name="struts.multipart.maxSize" value="20971520" />
+	
+	<package name="default" extends="struts-default">
+		
+		<!-- 除了登陆界面的action-“login”不用登陆验证之外（使用defaultStack），
+			其他都要进行登陆的验证，需使用自定义的这个myInterceptorStack -->
+		<interceptors>
+			
+			<interceptor name="loginInterceptor" class="com.bjsxt.oa.web.interceptor.LoginInterceptor"/>
+			
+			<interceptor-stack name="myInterceptorStack">
+				<interceptor-ref name="loginInterceptor"/>
+				<!-- allowedTypesSet:允许上传的文件类型,可以到%Tomcat_home%/conf下的web.xml文件中找到所有文件类型的类型名
+					由于defaultStack中已经包含了fileUpload拦截器，所以fileUpload拦截器会执行俩遍，所以我们会在日志信息中看到俩次清除临时文件的记录。
+				 -->
+				<!-- 
+				<interceptor-ref name="fileUpload">
+					<param name="maxinumSize">10240000000</param>
+					<param name="allowedTypesSet">application/zip,application/pdf,image/gif</param>
+				</interceptor-ref>
+				 -->
+				<interceptor-ref name="defaultStack"/>
+			</interceptor-stack>
+		</interceptors>
+		<!-- 覆盖了默认的拦截器栈 -->
+		<default-interceptor-ref name="myInterceptorStack"/>
+		
+		<!-- 公共的结果界面 -->
+		<global-results>
+			<result name="pub_add_success">/common/pub_add_success.jsp</result>
+			<result name="pub_update_success">/common/pub_update_success.jsp</result>
+			<result name="pub_del_success">/common/pub_del_success.jsp</result>
+			<result name="pub_exception">/common/exception.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</global-results>
+		
+		<!-- 统一的异常处理 -->
+		<global-exception-mappings>
+			<exception-mapping result="pub_exception" exception="com.bjsxt.oa.web.SystemException"/>
+		</global-exception-mappings>
+		
+		<action name="flowForm" class="flowFormAction">
+			<result name="index">/form/index.jsp</result>
+			<result name="form_input">/form/form_input.jsp</result>
+			<result name="add_ok" type="redirect">
+				<param name="location">flowForm!addFormInput.do</param>
+				<param name="workflowId">${workflowId }</param>
+			</result>
+			<result name="formfield_input">/form/formfield_input.jsp</result>
+			<result name="item_input">/form/item_input.jsp</result>
+		</action>
+		
+		<!-- 文档管理 -->
+		<action name="document" class="documentAction">
+			<result name="index">/document/index.jsp</result>
+			<result name="add_input">/document/add_input.jsp</result>
+			<result name="approve_input">/document/approve_input.jsp</result>
+			<result name="select_flow">/document/select_flow.jsp</result>
+			<result name="submit_input">/document/submit_input.jsp</result>
+			<result name="approved_list">/document/approved_list.jsp</result>
+			<result name="approving_list">/document/approving_list.jsp</result>
+			<result name="approved_history">/document/approve_history.jsp</result>
+		</action>
+		
+		<!-- 流程管理，包含文件上传 -->
+		<action name="workflow" class="workflowAction">
+			<result name="index">/workflow/index.jsp</result>
+			<result name="add_success" type="redirect">/workflow.do</result>
+			<result name="view_image">/workflow/view_image.jsp</result>
+			<result name="view_def">/workflow/view_def.jsp</result>
+		</action>
+		
+		<!-- outlook和main界面 -->
+		<action name="index" class="indexAction">
+			<result name="outlook">/outlook.jsp</result>
+			<result name="main">/main.jsp</result>
+		</action>
+		
+		<!-- 主页 -->
+		<action name="login" class="loginAction">
+			<result name="back_index">/back_index.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		
+		<!-- 权限管理 -->
+		<action name="acl" class="aclAction">
+			<result name="index">/acl/index.jsp</result>
+		</action>
+		
+		<!-- 人员管理 -->
+		<action name="person" class="personAction">
+			<result name="index">/person/index.jsp</result>
+			<result name="add_input">/person/add_input.jsp</result>
+			<result name="update_input">/person/update_input.jsp</result>
+		</action>
+		
+		<!-- 机构管理 -->
+		<action name="org" class="orgAction">
+			<result name="index">/org/index.jsp</result>
+			<result name="add_input">/org/add_input.jsp</result>
+			<result name="update_input">/org/update_input.jsp</result>
+			<result name="select_org">/org/select_org.jsp</result>
+		</action>
+		
+		<!-- 模块管理 -->
+		<action name="module" class="moduleAction">
+			<result name="index">/module/index.jsp</result>
+			<result name="add_input">/module/add_input.jsp</result>
+			<result name="update_input">/module/update_input.jsp</result>
+		</action>
+		
+		<!-- 角色管理 -->
+		<action name="role" class="roleAction">
+			<result name="index">/role/index.jsp</result>
+			<result name="add_input">/role/add_input.jsp</result>
+		</action>
+		
+		<!-- 用户管理 -->
+		<action name="user" class="userAction">
+			<result name="index">/user/index.jsp</result>
+			<result name="add_input">/user/add_input.jsp</result>
+			<result name="update_input">/user/update_input.jsp</result>
+			<result name="user_role_list">/user/user_role_list.jsp</result>
+			<result name="user_role_input">/user/user_role_input.jsp</result>
+		</action>
+	</package>
+</struts>
+	

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class table="T_Document" name="com.bjsxt.oa.model.Document">
+    <id name="id">
+      <generator class="native"/>
+    </id>
+    <property name="title"/>
+    <property name="content" length="99999999" type="binary"/>
+    <property name="createTime"/>
+    <many-to-one name="creator"/>
+    <property name="status"/>
+    <property name="description"/>
+    <many-to-one name="workflow"/>
+    <property name="processInstanceId"/>
+    <map table="T_Document_Properties" name="properties">
+    	<key column="documentId"></key>
+    	<map-key type="string" column="propertyName"></map-key>
+    	<composite-element class="com.bjsxt.oa.model.DocumentProperty">
+    		<property name="java_lang_String"/>
+    		<property name="java_lang_Integer"/>
+    		<property name="java_io_File" length="99999999" type="binary"/>
+    	</composite-element>
+    </map>
+  </class>
+</hibernate-mapping>
